@@ -6,11 +6,12 @@ var fs = require('fs'),
     PNG = require('pngjs').PNG,
     pixelmatch = require('pixelmatch');
 
+// Remove the first two arguments from the array.
 var myargs = process.argv.slice(2);
 
 
-var img1 = fs.createReadStream(myargs[0]).pipe(new PNG()).on('parsed', doneReading),
-    img2 = fs.createReadStream(myargs[1]).pipe(new PNG()).on('parsed', doneReading),
+var img1 = fs.createReadStream("../Monitor File Uploads/"+myargs[0]).pipe(new PNG()).on('parsed', doneReading),
+    img2 = fs.createReadStream("../Monitor File Uploads/"+myargs[1]).pipe(new PNG()).on('parsed', doneReading),
     filesRead = 0;
 
 function doneReading() {
