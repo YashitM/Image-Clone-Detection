@@ -13,7 +13,7 @@ class MyHandler(PatternMatchingEventHandler):
 	def process(self, event):
 		file_path = event.src_path
 		# file_name = file_path.split("/")[len(file_path.split("/"))-1]
-		# test_insert.convert(file_name)	
+		# test_insert.convert(file_name)
 		test_insert.convert(file_path)
 
 	def on_created(self, event):
