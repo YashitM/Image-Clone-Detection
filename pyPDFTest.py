@@ -6,7 +6,7 @@ import os
 
 def PdfinfoToDb(filePath):
 	"""
-	Returns width, height of the Pdf file in millimeters.
+	Updates the database with the orientation, height, width of the PDF file given as parameter.
 	"""
 	pdf = PyPDF2.PdfFileReader(filePath, "rb")
 	p = pdf.getPage(0)
@@ -14,7 +14,7 @@ def PdfinfoToDb(filePath):
 	w = float(p.mediaBox.getWidth()) * 0.352
 	h = float(p.mediaBox.getHeight()) * 0.352
 
-	db = mysql.connector.Connect()
+	db = mysql.connector.Connect(**login_info)
 	cursor=db.cursor()
 
 	orientation = ""

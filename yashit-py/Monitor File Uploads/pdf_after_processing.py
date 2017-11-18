@@ -1,5 +1,8 @@
 def handle_pdf(file_name):
-
+	"""
+	Updates the database with the document info of the file along with the
+	orientation, height and width of the file passed as argument.
+	"""
 	import mysql.connector
 	from database import login_info
 	from PyPDF2 import PdfFileReader
