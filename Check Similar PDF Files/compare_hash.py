@@ -1,8 +1,9 @@
+# To run, python compare_hash.py
+
 def compare(file_hash):
 	"""
-	This function connects to the database and compares the current file's Hash to already existing files.
-	If it finds a file with the same hash it will delete it.
-	"""
+    This script will check the hash of the newly entered file with the existing hashes in the database. 
+    """
 	import mysql.connector
 	from database import login_info
 	import os
@@ -16,6 +17,12 @@ def compare(file_hash):
 		if existing_hash == file_hash:
 			cursor.execute('DELETE FROM tbl_uploads WHERE hash LIKE ' + file_hash + ' AND processed LIKE "FALSE"')
 			os.remove(file_path)
+			print("File already exists! Removing it")
 			# assuming uploads folder is in the same directory as the script
 
 	cursor.close()
+
+if __name__ == '__main__':
+	# Enter a test hash to check whether the script works
+	file_hash = ""
+	compare(file_hash)
