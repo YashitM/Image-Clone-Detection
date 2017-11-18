@@ -7,6 +7,10 @@ import tempfile
 import time
 
 def convert(pdf_file_name):
+	"""
+	This function converts the given PDF file (as argument) to its respective PNG image(s) and
+	saves it to the disk.
+	"""
 	start = time.time()
 	inputpdf = PdfFileReader(pdf_file_name)
 	if inputpdf.numPages:

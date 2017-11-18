@@ -10,6 +10,9 @@ sys.path.insert(0,"../Check Similar PDF Files/")
 import compare_hash
 
 def compute_hash(file_name):
+	"""
+	Returns the sha256 hash of the bytes of the file given as argument.
+	"""
  	import hashlib
  	BUF_SIZE = 65536
  	sha256 = hashlib.sha256()
@@ -22,6 +25,11 @@ def compute_hash(file_name):
  			sha256.update(data)
  	return sha256.hexdigest()
 
+
+"""
+Below is an obsesrver which observes a perticular directory for any changes.
+If a file is added, deleted or renamed it prints/returns the file's name.
+"""
 class MyHandler(PatternMatchingEventHandler):
 	patterns = ["*"]
 
