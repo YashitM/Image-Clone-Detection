@@ -15,10 +15,16 @@ function doneReading() {
     if (++filesRead < 2) return;
     var diff = new PNG({width: img1.width, height: img1.height});
 
-    pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {threshold: 0.1});
+    var numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, img1.width, img1.height, {threshold: 0.1});
+    var im1PixelLen = img1.data.length;
+    var im2PixelLen = img2.data.length;
+
+    var avg = (im2PixelLen+im1PixelLen)/2;
+    var percentDifference = (numDiffPixels/avg)*100;
 
     diff.pack().pipe(fs.createWriteStream('diff.png'));
     var end = new Date().getTime();
 	var time = end - start;
+    console.log(percentDifference)
 	console.log(time)
 }
