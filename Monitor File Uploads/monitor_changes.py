@@ -8,6 +8,7 @@ import image_after_processing
 sys.path.insert(0,"../Check Similar PDF Files/")
 
 import compare_hash
+import split
 
 def compute_hash(file_name):
 	"""
@@ -49,6 +50,7 @@ class MyHandler(PatternMatchingEventHandler):
 		elif "pdf" in file_type:
 			# Send it to PDF function
 			pdf_after_processing.handle_pdf(file_path)
+			split.split_pdfs(file_path)
 	def on_created(self, event):
 		self.process(event)
 
