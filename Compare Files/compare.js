@@ -1,14 +1,14 @@
 
 var start = new Date().getTime();
 
+var myargs = process.argv.slice(2);
 
 var fs = require('fs'),
     PNG = require('pngjs').PNG,
     pixelmatch = require('pixelmatch');
 
-
-var img1 = fs.createReadStream('E.png').pipe(new PNG()).on('parsed', doneReading),
-    img2 = fs.createReadStream('F.png').pipe(new PNG()).on('parsed', doneReading),
+var img1 = fs.createReadStream(myargs[0]).pipe(new PNG()).on('parsed', doneReading),
+    img2 = fs.createReadStream(myargs[1]).pipe(new PNG()).on('parsed', doneReading),
     filesRead = 0;
 
 function doneReading() {
