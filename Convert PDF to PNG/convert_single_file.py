@@ -18,8 +18,10 @@ def convert_pdf_to_png(filename):
 	factor = newHeight/height
 	newWidth = width*factor
 	print(newWidth, newHeight)
+	if not os.path.exists("Thumbnail"):
+		os.makedirs("Thumbnail")
 	image.thumbnail((newWidth,newHeight), pilImage.ANTIALIAS)
-	image.save(filename,"PNG")
+	image.save("./Thumbnail/"+filename)
 	print(time.time() - start)
 
 if __name__ == '__main__':

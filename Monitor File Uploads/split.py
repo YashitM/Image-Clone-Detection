@@ -7,6 +7,8 @@ def split_pdfs(file_name):
 
 	from PyPDF2 import PdfFileWriter, PdfFileReader
 	import time
+	import convert_single_file
+	import compare_png_with_existing
 
 	start = time.time()
 
@@ -17,6 +19,9 @@ def split_pdfs(file_name):
 		output.addPage(inputpdf.getPage(i))
 		with open("basedir/"+file_name+"%s.pdf" % i, "wb") as outputStream:
 			output.write(outputStream)
+		convert_single_file.convert_single_file("basedir/"+file_name+"%s.pdf" % i)
+		compare_png_with_existing.find_similar_thumbnails(file_name+"%s.pdf"+".png" % i)
+
 
 	print(time.time() - start)
 

@@ -12,7 +12,7 @@ sys.path.insert(0,"../Check Similar PDF Files/")
 import compare_hash
 import split
 
-def worker():
+def worker1():
 	while True:
 		item = q.get()
 		split.split_pdfs(item)
@@ -62,7 +62,7 @@ class MyHandler(PatternMatchingEventHandler):
 			pdf_after_processing.handle_pdf(file_path)
 			# Then send it to the split pdf function
 			# split.split_pdfs(file_path)
-			q.put(file_path)
+			q1.put(file_path)
 	def on_created(self, event):
 		self.process(event)
 
@@ -72,11 +72,11 @@ if __name__ == '__main__':
 	else:
 		args = sys.argv[1:]
 		observer = Observer()
-		q = Queue.Queue()
+		q1 = Queue.Queue()
 		for i in range(2):
-			t = threading.Thread(target=worker)
-			t.daemon = True
-			t.start()
+			t1 = threading.Thread(target=worker1)
+			t1.daemon = True
+			t1.start()
 		# observer.schedule(MyHandler(), path=args[0] if args else '.')
 		observer.schedule(MyHandler(), path=args[0])
 		observer.start()
