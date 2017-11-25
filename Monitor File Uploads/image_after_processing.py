@@ -1,4 +1,4 @@
-def handle_image(file_name)
+def handle_image(file_name):
 	import magic
 	from PIL import Image
 	import os

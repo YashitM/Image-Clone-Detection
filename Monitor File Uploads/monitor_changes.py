@@ -5,7 +5,7 @@ import magic
 import pdf_after_processing
 import image_after_processing
 import threading
-from queue import Queue
+from multiprocessing import Queue
 
 sys.path.insert(0,"../Check Similar PDF Files/")
 
