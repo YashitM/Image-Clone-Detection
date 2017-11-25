@@ -17,10 +17,10 @@ def handle_image(file_name):
 		dimensions = getDimensions(file_name)
 			
 		import mysql.connector
-		from database import login_info
+		# from database import login_info
 		import os
 
-		db = mysql.connector.Connect(**login_info)
+		db = mysql.connector.Connect(user="root", password="", database="tbl_uploads", host="localhost")
 		cursor=db.cursor()
 
 		sql_query = 'UPDATE tbl_uploads SET file_doc_info = "' + dimensions + " " + xmp_info + '", processed="TRUE" WHERE processed="FALSE" AND file_dir LIKE "' + file_name + '";'

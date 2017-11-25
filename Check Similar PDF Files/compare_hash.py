@@ -5,10 +5,10 @@ def compare(file_hash):
     This script will check the hash of the newly entered file with the existing hashes in the database. 
     """
 	import mysql.connector
-	from database import login_info
+	# from database import login_info
 	import os
 
-	db = mysql.connector.Connect(**login_info)
+	db = mysql.connector.Connect(user="root", password="", database="tbl_uploads", host="localhost")
 	cursor=db.cursor()
 
 	cursor.execute('SELECT pdf_id, file_dir, hash FROM tbl_uploads WHERE processed LIKE "TRUE"')
