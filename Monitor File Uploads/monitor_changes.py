@@ -5,7 +5,7 @@ import magic
 import pdf_after_processing
 import image_after_processing
 import threading
-from multiprocessing import Queue
+import Queue
 
 sys.path.insert(0,"../Check Similar PDF Files/")
 
@@ -48,14 +48,16 @@ class MyHandler(PatternMatchingEventHandler):
 		# Added time delay to guarentee that the database has been filled with the data 
 		# Need to check if this is needed on the server
 		time.sleep(1)
-		compare_hash.compare(compute_hash(file_path))
+		# compare_hash.compare(compute_hash(file_path))
 
 		file_type = magic.from_file(file_path, mime=True)
-
-		if "png" or "jpeg" or "bmp" in file_type:
+		print(file_type)
+		if ("png" in str(file_type)) or ("jpeg" in str(file_type)) or ("bmp" in str(file_type)):
 			# Send it to PNG Function
+			print("image")
 			image_after_processing.handle_image(file_path)
 		elif "pdf" in file_type:
+			print("PDf")
 			# Send it to PDF function
 			pdf_after_processing.handle_pdf(file_path)
 			# Then send it to the split pdf function
@@ -70,7 +72,7 @@ if __name__ == '__main__':
 	else:
 		args = sys.argv[1:]
 		observer = Observer()
-		q = Queue()
+		q = Queue.Queue()
 		for i in range(2):
 			t = threading.Thread(target=worker)
 			t.daemon = True

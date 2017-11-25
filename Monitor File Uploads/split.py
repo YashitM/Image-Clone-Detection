@@ -15,7 +15,7 @@ def split_pdfs(file_name):
 	for i in xrange(inputpdf.numPages):
 		output = PdfFileWriter()
 		output.addPage(inputpdf.getPage(i))
-		with open("basedir/document-page%s.pdf" % i, "wb") as outputStream:
+		with open("basedir/"+file_name+"%s.pdf" % i, "wb") as outputStream:
 			output.write(outputStream)
 
 	print(time.time() - start)
