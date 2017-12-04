@@ -1,6 +1,6 @@
 def comparePDFsPNG(fileName):
 	import os
-	directoryName = "./thumbnails/"
+	directoryName = config.store_thumbnails
 	files = os.listdir(directoryName)
 	for i in files:
 		print ("node \"Test Folders\Compare Files\compare.js\" \"" + fileName + "\" " + "\"" + directoryName + i + "\"")
