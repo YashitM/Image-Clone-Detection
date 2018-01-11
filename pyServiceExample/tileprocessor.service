@@ -1,0 +1,12 @@
+[Unit]
+Description=Python scripta tile processor
+After=multi-user.target mysql.service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/rkampenuss/www/c-ev.com/py/yashit-py/monitor_changes.py uploads/
+
+[Install]
+WantedBy=multi-user.target
+Alias=tileprocessor.service
+

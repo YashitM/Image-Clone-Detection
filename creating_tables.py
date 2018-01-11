@@ -1,7 +1,11 @@
+"""
+	This function resets the database by removing all existing data and recreating the table structure
+"""
 
 from database import login_info
 import mysql.connector
-
+import os
+import config
 
 db = mysql.connector.Connect(**login_info)
 cursor=db.cursor()
@@ -9,7 +13,7 @@ cursor=db.cursor()
 cursor.execute("""DROP TABLE IF EXISTS users""")
 cursor.execute("""
 	CREATE TABLE users(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
 		email VARCHAR(100),
 		pass VARCHAR(100),
 		verification_token VARCHAR(100),
@@ -25,41 +29,44 @@ cursor.execute("""
 cursor.execute("""DROP TABLE IF EXISTS album""")
 cursor.execute("""
 	CREATE TABLE album(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
 		user_id VARCHAR(100),
-		name VARCHAR(100),
-		upload_log CLOB,
+		name VARCHAR(100)
 	)
 	""")
 
 cursor.execute("""DROP TABLE IF EXISTS upload_file""")
 cursor.execute("""
 	CREATE TABLE upload_file(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
+		user_id VARCHAR(100),
+		album_id VARCHAR(100),
 		timeUploaded VARCHAR(100),
 		hash VARCHAR(100),
 		type VARCHAR(100),
 		size VARCHAR(100),
-		doc_info CLOB,
-		processed BOOLEAN,
+		doc_info VARCHAR(10000),
+		processed VARCHAR(10),
 		dir VARCHAR(500),
+		log VARCHAR(10000)
 	)
 	""")
 
 cursor.execute("""DROP TABLE IF EXISTS image""")
 cursor.execute("""
 	CREATE TABLE image(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
 		album_id VARCHAR(100),
 		user_id VARCHAR(100),
+		upload_file_id VARCHAR(100),
+		thumbnail_id VARCHAR(100),
 		page_size VARCHAR(100),
-		png VARCHAR(100),
-		pdf VARCHAR(100),
-		width VARCHAR(100),
-		height VARCHAR(100),
-		thumb VARCHAR(100),
+		png LONGBLOB,
+		pdf LONGBLOB,
+		width INTEGER(11),
+		height INTEGER(11),
 		page_number VARCHAR(100),
-		request_json CLOB
+		sequence INTEGER(11)
 	)
 	""")
 
@@ -67,121 +74,73 @@ cursor.execute("""
 cursor.execute("""DROP TABLE IF EXISTS tiles""")
 cursor.execute("""
 	CREATE TABLE tiles(
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		image_id VARCHAR(100),
-		deepzoom_id VARCHAR(100),
-		tile VARCHAR(100)
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
+		image_id INTEGER(11),
+		deepzoom_id VARCHAR(10),
+		tile LONGBLOB
 	)
 	""")
 
 
-cursor.execute("""DROP TABLE IF EXISTS thumb_comparision""")
+cursor.execute("""DROP TABLE IF EXISTS thumb_comparison""")
 cursor.execute("""
-	CREATE TABLE thumb_comparision(
-		new_image_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		existing_image_id VARCHAR(100),
-		comparision VARCHAR(100),
-		difference_percentage INTEGER
+	CREATE TABLE thumb_comparison(
+		new_image_id INTEGER,
+		existing_image_id INTEGER,
+		comparison LONGBLOB,
+		difference_percentage VARCHAR(100)
 	)
 	""")
 
-def insertInUser(email, passwd, verification_token, reset_token, registered_on, reset_date, verified, firstname, lastname):
-	s = email + ", " + passwd + ", " + verification_token + ", " + reset_token + ", " + registered_on + ", " + reset_date + ", " + str(verified) + ", " + firstname + ", " + lastname
-	cursor.execute("""
-		INSERT INTO users(
-			email, pass, verification_token, reset_token, registered_on, reset_date, verified, firstname, lastname
-		) VALUES ( """ + s + """ )""")
+cursor.execute("""DROP TABLE IF EXISTS thumbnail""")
+cursor.execute("""
+	CREATE TABLE thumbnail(
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
+		dir VARCHAR(1000),
+		width VARCHAR(100),
+		height VARCHAR(100),
+		orientation VARCHAR(100),
+		generatedBy VARCHAR(100),
+		png LONGBLOB
+	)
+	""")
 
-def insertInAlbum(user_id, name, upload_log):
-	s = user_id + ", " + name + ", " + upload_log
-	cursor.execute("""
-		INSERT INTO album(
-			user_id, name, upload_log
-		) VALUES ( """ + s + """)""")
+if config.reset_folders_in_creating_table == 0: #if set to 1, then clears the files and chgrp www-data persmissions
+	import shutil
 
-def insertInUploadFile(currTime, hashid, typeparam, size, doc_info, processed, dirparam):
-	s = currTime + ", " + hashid + ", " + typeparam + ", " + size + ", " + doc_info + ", " + str(processed) + ", " + dirparam
-	cursor.execute("""
-		INSERT INTO upload_file(
-			timeUploaded, hash, type, size,	doc_info, processed, dir
-		) VALUES ( """ + s + """)""")
+	if os.path.exists(config.store_main_uploads):
+		shutil.rmtree(config.store_main_uploads)
+	
+	if os.path.exists(config.store_split_pdfs):
+		shutil.rmtree(config.store_split_pdfs)
 
-def insertInImage(album_id, user_id, page_size, png, pdf, width, height, thumb, page_number, request_json):
-	s = album_id + ", " + user_id + ", " + page_size + ", " + png + ", " + pdf + ", " + width + ", " + height + ", " + thumb + ", " + page_number + ", " + request_json
-	cursor.execute("""
-		INSERT INTO image(
-			album_id, user_id, page_size, png, pdf, width, height, thumb, page_number, request_json
-		) VALUES ( """ + s + """)""")
+	if os.path.exists(config.store_thumbnails):
+		shutil.rmtree(config.store_thumbnails)
 
-def insertInTiles(image_id, deepzoom_id, tile):
-	s = image_id + ", " + deepzoom_id + ", " + tile
-	cursor.execute("""
-		INSERT INTO image(
-			image_id, deepzoom_id, tile
-		) VALUES ( """ + s + """)""")
+	if os.path.exists(config.store_high_res_images):
+		shutil.rmtree(config.store_high_res_images)
 
-def insertInThumbComparision(existing_image_id, comparision, difference_percentage):
-	s = existing_image_id + ", " + comparision + ", " + difference_percentage
-	cursor.execute("""
-		INSERT INTO image(
-			existing_image_id, comparision, difference_percentage
-		) VALUES ( """ + s + """)""")
+	if os.path.exists(config.store_comparison_images):
+		shutil.rmtree(config.store_comparison_images)
 
-def deleteRowFromTable(table_name, coloumnName, value):
-	"""
-	Deletes row from given table where the given value equals the value in the coloumn given in coloumnName
-	"""
-
-	cursor.execute("""
-		DELETE FROM """ + table_name + """ WHERE """ + coloumnName + """ = """ + value
-		)
-
-#Remove the table if exists
-# cursor.execute("""DROP TABLE IF EXISTS drawings""")
-# cursor.execute("""
-# 	CREATE TABLE drawings(
-# 		drawing_id INTEGER PRIMARY KEY AUTO_INCREMENT,
-# 		page_number VARCHAR(10),
-# 		image LONGBLOB,
-# 		pdf	LONGBLOB,
-#                 width INTEGER,
-# 		height INTEGER,
-# 		request_json VARCHAR(10),
-# 		result_json VARCHAR(10)
-# 		)
-# 	""")
-
-# cursor.execute("""DROP TABLE IF EXISTS tiles""")
-# cursor.execute("""
-# 	CREATE TABLE tiles(
-# 		id INTEGER PRIMARY KEY AUTO_INCREMENT,
-# 		drawing_id INTEGER,
-# 		deepzoom_id VARCHAR(10),
-# 		image LONGBLOB
-# 		)
-# 	""")
+	if os.path.exists(config.store_converted_images):
+		shutil.rmtree(config.store_converted_images)
 
 
-# cursor.execute("""DROP TABLE IF EXISTS tbl_uploads""")
-# cursor.execute("""
-#         CREATE TABLE tbl_uploads(
-#         	pdf_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-#                 file  VARCHAR( 100 ) NOT NULL,
-#                 type  VARCHAR( 100 ) NOT NULL,
-#                 size INT NOT NULL
-#                 )
-#         """)
+	if not os.path.exists(config.store_main_uploads):
+		os.makedirs(config.store_main_uploads)
+	
+	if not os.path.exists(config.store_split_pdfs):
+		os.makedirs(config.store_split_pdfs)
 
-# cursor.execute("""DROP TABLE IF EXISTS tbl_uploads_test""")
-# cursor.execute("""
-#         CREATE TABLE tbl_uploads_test(
-#         	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-#             file_dir  VARCHAR( 100 ) NOT NULL,
-#             file_type  VARCHAR( 100 ) NOT NULL,
-#             file_size INT NOT NULL,
-#             file_doc_info VARCHAR( 5000 ) NOT NULL,
-#             date_time_uplaod VARCHAR( 5000 ) NOT NULL,
-#             hash VARCHAR( 100 ) NOT NULL,
-#             processed VARCHAR( 10 ) NOT NULL
-#         )
-# """)
+	if not os.path.exists(config.store_thumbnails):
+		os.makedirs(config.store_thumbnails)
+
+	if not os.path.exists(config.store_high_res_images):
+		os.makedirs(config.store_high_res_images)
+
+	if not os.path.exists(config.store_comparison_images):
+		os.makedirs(config.store_comparison_images)
+
+	if not os.path.exists(config.store_converted_images):
+		os.makedirs(config.store_converted_images)

@@ -1,2 +1,11 @@
 uploads/*
+!uploads/.gitkeep
 *.pyc
+thumbnails/*
+!thumbnails/.gitkeep
+splitPDFs/*
+!splitPDFs/.gitkeep
+highResImages/*
+!highResImages/.gitkeep
+comparisons/*
+!comparisons/.gitkeep
